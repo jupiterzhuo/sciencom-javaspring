@@ -10,7 +10,7 @@ import com.sciencom.service.MessageService;
 @Component
 public class Consumer {
 	//DI
-	//1. Property
+	//1. Property /Interface
 	//2. Constructor
 	//3. Setter
 	

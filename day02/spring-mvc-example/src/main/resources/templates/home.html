@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Home</title>
+</head>
+
+<body>
+	<h1>Hello From static text</h1>
+	<h1 th:text=${greeting}></h1>
+	
+	<table border="1">
+		<tr>
+			<td>UserName</td>
+			<td>First Name</td>
+			<td>Last Name</td>
+		</tr>
+		<tr th:each="student:${listStudent}">
+			<td th:text=${student.userName}></td>
+			<td th:text=${student.firstName}></td>
+			<td th:text=${student.lastName}></td>
+		</tr>
+	</table>
+</body>
+</html>

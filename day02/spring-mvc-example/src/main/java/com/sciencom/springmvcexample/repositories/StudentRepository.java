@@ -28,4 +28,18 @@ public class StudentRepository {
 		return listStudents;
 	}
 	
+	public Student addStudent(Student student) {
+		
+		Student newStudent = new Student(student.getUserName(),
+				student.getFirstName() , 
+				student.getLastName(), 
+				student.getEmail(), 
+				student.getGender(), 
+				student.getCountryCode());
+		STUDENTS.put(student.getUserName(), newStudent);
+		return student;
+		
+		
+	}
+	
 }

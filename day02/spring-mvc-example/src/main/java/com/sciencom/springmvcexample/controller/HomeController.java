@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,6 +29,7 @@ public class HomeController {
 	
 	@Autowired
 	private CountryRepository CountryRepository;
+	
 	@RequestMapping(value ={"/","/home","/index"}, 
 			method = RequestMethod.GET)
 	
@@ -45,5 +47,15 @@ public class HomeController {
 		List<Country> listCountries = CountryRepository.getAllCountry();
 		model.addAttribute("listCountries", listCountries);
 		return "add-student";
+	}
+	
+	@RequestMapping(value = "/add-student",
+			method =RequestMethod.POST)
+	public String saveStudent(Model model,
+			@ModelAttribute("student")Student student) {
+		
+		Student newStudent =null;
+		newStudent=studentRepository.addStudent(student);
+		return "redirect:/";
 	}
 }

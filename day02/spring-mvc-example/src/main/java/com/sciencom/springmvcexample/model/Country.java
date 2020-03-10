@@ -1,5 +1,6 @@
 package com.sciencom.springmvcexample.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

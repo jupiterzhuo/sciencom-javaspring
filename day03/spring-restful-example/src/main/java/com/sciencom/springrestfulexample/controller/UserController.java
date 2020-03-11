@@ -1,5 +1,9 @@
 package com.sciencom.springrestfulexample.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -17,23 +21,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sciencom.springrestfulexample.Exception.UserServiceException;
+import com.sciencom.springrestfulexample.request.UpdatedUserRequest;
 import com.sciencom.springrestfulexample.request.UserRequest;
 import com.sciencom.springrestfulexample.response.UserResponse;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
-
-	//localhost:8080?page=1&limit=50&sort=desc
+	//Colection untuk menampung user response
+	Map<String, UserResponse> users;
+	
 	@GetMapping
-	public String getAllUser(@RequestParam(value = "page",defaultValue = "1") int page,
-			@RequestParam(value = "limit", defaultValue = "50") int limit,
-			@RequestParam(value = "sort", 
-			required = false,defaultValue = "desc") String sort) {
-		return "Get All User Page " + page + 
-				" and with limit:" + limit + 
-				" ,sort type :" + sort;
-	}
+	public ResponseEntity<List<UserResponse>> getAllUser() {
+		if (users!=null) {
+			List<UserResponse> lstUser = new ArrayList<>();
+			lstUser.addAll(users.values());
+			return new ResponseEntity<>(lstUser,HttpStatus.OK);
+		}
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}	
 	
 	//localhost:8080/user/2
 	//localhost:8080/user/1
@@ -42,11 +49,19 @@ public class UserController {
 			produces={MediaType.APPLICATION_XML_VALUE,
 					MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<UserResponse> getUserById(@PathVariable String userId) {
-		UserResponse userResponse = new UserResponse();
-		userResponse.setFirstName("Jupiter");
-		userResponse.setLastName("Zhuo");
-		userResponse.setEmail("jupiterc@gmail.com");
-		return new ResponseEntity<UserResponse>(userResponse, HttpStatus.OK) ;
+		
+//		String myString = null;
+//		int myStringLength = myString.length();
+		
+		if(true) throw new UserServiceException("Error Euy.....");
+			
+		if(users.containsKey(userId)) {
+			return new ResponseEntity<UserResponse>(users.get(userId), HttpStatus.OK) ;
+		}
+		else {
+			return new ResponseEntity<UserResponse>(HttpStatus.NO_CONTENT) ;
+		}
+		
 	}
 	// jangan lupa apabila anda ingin menampilkan dalam format XML,
 	//sertakan dependency jackson dataformat XML (Silakan dicek pada pom.xml)
@@ -70,17 +85,43 @@ public class UserController {
 		userResponse.setEmail(userRequest.getEmail());
 		String userId =UUID.randomUUID().toString();
 		userResponse.setUserId(userId);
-	
+		
+		if(users==null) {
+			//Inisialisasi object baru
+			users = new HashMap<String, UserResponse>();
+		}
+		//simpan nilai ke collection
+		users.put(userId, userResponse);
+		
 		return new ResponseEntity<UserResponse>(userResponse,HttpStatus.CREATED);
 	}
 	
-	@PutMapping
-	public String updateUser() {
-		return "Update user";
-	}
 	
-	@DeleteMapping
-	public String deleteUser() {
-		return "Delete user";
+	
+	@PutMapping(value ="/{userId}",consumes = {
+			MediaType.APPLICATION_XML_VALUE,
+			MediaType.APPLICATION_JSON_VALUE
+			}
+	,produces = {
+			MediaType.APPLICATION_XML_VALUE,
+			MediaType.APPLICATION_JSON_VALUE
+	
+	})
+	public ResponseEntity<UserResponse> updateUser(
+			@PathVariable String userId,
+			@Valid @RequestBody UserRequest updatedUserReq) {
+
+				UserResponse storedUserDetail = users.get(userId);
+				storedUserDetail.setFirstName(updatedUserReq.getFirstName());
+				storedUserDetail.setLastName(updatedUserReq.getLastName());
+
+				users.put(userId, storedUserDetail);
+				return new ResponseEntity<UserResponse>(storedUserDetail,HttpStatus.ACCEPTED);
+	}
+
+	@DeleteMapping(value = "/{userId}")
+	public ResponseEntity<Void> deleteUser(@PathVariable String userId) {
+		users.remove(userId);
+		return ResponseEntity.noContent().build();
 	}
 }
